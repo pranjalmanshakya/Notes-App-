@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151515" media="(prefers-color-scheme: dark)">
+<title>Notes</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ NOTE LIST ============ -->
+<section id="listView" class="view">
+  <header class="topbar">
+    <h1>Notes</h1>
+    <button id="syncBtn" class="icon-btn sync" data-state="off" title="Sync with Google Drive" aria-label="Sync with Google Drive">
+      <svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1-.6-9.96A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/><path class="tick" d="M9.5 13.5l2 2 3.5-4"/><path class="spin" d="M12 10v3l2 1"/></svg>
+    </button>
+    <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+  <div class="searchwrap">
+    <input id="search" type="search" placeholder="Search notes" autocomplete="off">
+  </div>
+  <main id="grid" class="grid"></main>
+  <p id="empty" class="empty" hidden>No notes yet.<br>Tap <b>+</b> to write, draw or paste a screenshot.</p>
+  <button id="newBtn" class="fab" aria-label="New note">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</section>
+
+<!-- ============ EDITOR ============ -->
+<section id="editorView" class="view" hidden data-mode="type">
+  <header class="topbar editor-bar">
+    <button id="backBtn" class="icon-btn" aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <input id="titleInput" placeholder="Title" autocomplete="off" enterkeyhint="next">
+    <button id="imgBtn" class="icon-btn" title="Add image / screenshot" aria-label="Add image">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg>
+    </button>
+    <button id="modeBtn" class="icon-btn" title="Handwriting" aria-label="Toggle handwriting">
+      <svg viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/><path d="M14 7l3 3"/></svg>
+    </button>
+    <button id="moreBtn" class="icon-btn" aria-label="More">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/></svg>
+    </button>
+  </header>
+
+  <div id="textTools" class="tools">
+    <button data-cmd="bold" aria-label="Bold"><b>B</b></button>
+    <button data-cmd="italic" aria-label="Italic"><i>I</i></button>
+    <button data-cmd="underline" aria-label="Underline"><u>U</u></button>
+    <button data-cmd="strikeThrough" aria-label="Strikethrough"><s>S</s></button>
+    <span class="sep"></span>
+    <button data-cmd="heading" aria-label="Heading">H</button>
+    <button data-cmd="insertUnorderedList" aria-label="Bullet list">
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="7" r="1.2"/><circle cx="5" cy="12" r="1.2"/><circle cx="5" cy="17" r="1.2"/><path d="M9 7h11M9 12h11M9 17h11"/></svg>
+    </button>
+    <button data-cmd="insertOrderedList" aria-label="Numbered list">
+      <svg viewBox="0 0 24 24"><path d="M9 7h11M9 12h11M9 17h11"/><path d="M4 5.5l1.2-.7V9M3.8 14.2a1.2 1.2 0 1 1 1.9 1.3L3.8 18h2.3"/></svg>
+    </button>
+    <button data-cmd="checklist" aria-label="Checklist">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="5" height="5" rx="1"/><path d="M4.2 7l1 1 1.7-2M11 7h10M11 17h10"/><rect x="3" y="14.5" width="5" height="5" rx="1"/></svg>
+    </button>
+  </div>
+
+  <div id="inkTools" class="tools" hidden>
+    <button data-tool="pen" class="active" aria-label="Pen">
+      <svg viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/></svg>
+    </button>
+    <button data-tool="hl" aria-label="Highlighter">
+      <svg viewBox="0 0 24 24"><path d="M9 14l-3 3v3h3l3-3"/><path d="M9 14l7-9 4 4-9 7z"/><path d="M4 21h16" class="thin"/></svg>
+    </button>
+    <button data-tool="eraser" aria-label="Eraser">
+      <svg viewBox="0 0 24 24"><path d="M8 20h12"/><path d="M5.5 15.5l9-9a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8L12 19H8.5z"/><path d="M10 11l4.5 4.5"/></svg>
+    </button>
+    <span class="sep"></span>
+    <div id="swatches" class="swatches"></div>
+    <span class="sep"></span>
+    <input id="sizeRange" type="range" min="1" max="14" step="1" value="3" aria-label="Pen size">
+    <span class="sep"></span>
+    <button id="undoBtn" aria-label="Undo"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+    <button id="redoBtn" aria-label="Redo"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+  </div>
+
+  <div id="wrap" class="editor-wrap">
+    <div id="scroller" class="scroller">
+      <div id="page" class="page">
+        <div id="body" class="body" contenteditable="true" data-placeholder="Start typing, tap ✎ to handwrite, or paste a screenshot…"></div>
+      </div>
+    </div>
+    <canvas id="ink"></canvas>
+    <div id="drawHint" class="draw-hint" hidden>Draw with one finger · scroll with two</div>
+  </div>
+
+  <div id="moreMenu" class="menu" hidden>
+    <button data-act="pin">Pin to top</button>
+    <button data-act="clearInk">Clear handwriting</button>
+    <button data-act="delete" class="danger">Delete note</button>
+  </div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<dialog id="settingsDlg">
+  <form method="dialog" class="sheet">
+    <h2>Settings</h2>
+
+    <section>
+      <h3>Google account backup</h3>
+      <p id="acctStatus" class="status">Not connected</p>
+      <label class="field">Google OAuth Client ID
+        <input id="clientIdInput" placeholder="1234-abc.apps.googleusercontent.com" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="row">
+        <button type="button" id="signInBtn" class="primary">Connect Google</button>
+        <button type="button" id="syncNowBtn">Sync now</button>
+        <button type="button" id="signOutBtn">Disconnect</button>
+      </div>
+      <label class="check"><input type="checkbox" id="autoSyncInput" checked> Sync automatically while connected</label>
+      <p class="muted">Notes are saved to a <b>Notes App</b> folder in your Google Drive and sync between devices.</p>
+    </section>
+
+    <section>
+      <h3>Backup file</h3>
+      <div class="row">
+        <button type="button" id="exportBtn">Export all notes</button>
+        <button type="button" id="importBtn">Import</button>
+      </div>
+    </section>
+
+    <div class="row end"><button value="close" class="primary">Done</button></div>
+  </form>
+</dialog>
+
+<input type="file" id="fileInput" accept="image/*" multiple hidden>
+<input type="file" id="importInput" accept="application/json,.json" hidden>
+<div id="toast" class="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
